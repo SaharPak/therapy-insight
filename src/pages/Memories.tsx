@@ -11,6 +11,7 @@ export function Memories() {
   const key = useVaultKey();
   const { t } = useLang();
   const [notes, setNotes] = useState<Note[] | null>(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     let urls: string[] = [];
@@ -24,6 +25,11 @@ export function Memories() {
   if (notes === null) {
     return <p className="py-10 text-center text-sage-500">{t("loading")}</p>;
   }
+
+  const trimmed = query.trim().toLowerCase();
+  const filtered = trimmed
+    ? notes.filter((n) => n.text.toLowerCase().includes(trimmed))
+    : notes;
 
   return (
     <div className="animate-fade-up space-y-6">
@@ -57,8 +63,24 @@ export function Memories() {
           </span>
         </Link>
       ) : (
-        <ul className="space-y-3">
-          {notes.map((note) => (
+        <>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("memories_search_ph")}
+            dir="auto"
+            className="input"
+            aria-label={t("memories_search_ph")}
+          />
+
+          {filtered.length === 0 ? (
+            <p className="py-8 text-center text-sm text-sage-500">
+              {t("memories_no_results")}
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {filtered.map((note) => (
             <li key={note.id}>
               <Link
                 to={`/memories/${note.id}`}
@@ -91,8 +113,10 @@ export function Memories() {
                 </div>
               </Link>
             </li>
-          ))}
-        </ul>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );

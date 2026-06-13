@@ -9,7 +9,13 @@ import {
 import { useLang } from "../i18n/LanguageContext";
 import { type Lang, langLabel } from "../i18n/translations";
 import { exportAll, wipeAllData } from "../db/database";
-import { GearIcon, LockIcon, SparkIcon, TrashIcon } from "../components/icons";
+import {
+  GearIcon,
+  HeartIcon,
+  LockIcon,
+  SparkIcon,
+  TrashIcon,
+} from "../components/icons";
 
 const PROVIDER_IDS: AIProviderId[] = ["mock", "openai", "anthropic"];
 
@@ -116,23 +122,28 @@ export function Settings() {
         </div>
 
         {config.provider !== "mock" && (
-          <label className="block">
-            <span className="text-xs font-medium text-sage-600">
-              {t("settings_apikey")}
-            </span>
-            <input
-              type="password"
-              value={config.apiKey}
-              onChange={(e) =>
-                updateConfig({ ...config, apiKey: e.target.value })
-              }
-              className="input mt-1"
-              placeholder={t("settings_apikey_ph")}
-            />
-            <span className="mt-1 block text-xs text-sage-500/80">
-              {t("settings_apikey_note")}
-            </span>
-          </label>
+          <>
+            <p className="rounded-2xl bg-bloom-400/10 p-3 text-xs leading-relaxed text-sage-700">
+              {t("settings_ai_warning")}
+            </p>
+            <label className="block">
+              <span className="text-xs font-medium text-sage-600">
+                {t("settings_apikey")}
+              </span>
+              <input
+                type="password"
+                value={config.apiKey}
+                onChange={(e) =>
+                  updateConfig({ ...config, apiKey: e.target.value })
+                }
+                className="input mt-1"
+                placeholder={t("settings_apikey_ph")}
+              />
+              <span className="mt-1 block text-xs text-sage-500/80">
+                {t("settings_apikey_note")}
+              </span>
+            </label>
+          </>
         )}
       </section>
 
@@ -155,9 +166,23 @@ export function Settings() {
         </button>
       </section>
 
-      <p className="px-2 text-center text-xs leading-relaxed text-sage-500/80">
-        {t("settings_disclaimer")}
-      </p>
+      <section className="card space-y-3">
+        <div className="flex items-center gap-2">
+          <HeartIcon className="h-5 w-5 text-sage-500" />
+          <h2 className="font-medium text-sage-700">
+            {t("settings_privacy_title")}
+          </h2>
+        </div>
+        <p className="text-xs leading-relaxed text-sage-600">
+          {t("settings_privacy_local")}
+        </p>
+        <p className="text-xs leading-relaxed text-sage-600">
+          {t("settings_disclaimer")}
+        </p>
+        <p className="rounded-2xl bg-bloom-400/10 p-3 text-xs leading-relaxed text-sage-700">
+          {t("settings_crisis_note")}
+        </p>
+      </section>
     </div>
   );
 }

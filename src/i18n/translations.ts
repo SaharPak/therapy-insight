@@ -91,6 +91,8 @@ const en = {
   memories_count_other: "{n} memories, newest first.",
   memories_empty_title: "Nothing here yet",
   memories_empty_cta: "Capture your first note",
+  memories_search_ph: "Search your reflections",
+  memories_no_results: "No reflections match your search.",
 
   // Memory detail
   detail_not_found: "This memory could not be found.",
@@ -131,8 +133,15 @@ const en = {
   settings_delete: "Delete everything",
   settings_wipe_confirm:
     "Delete ALL notes, insights and your passphrase from this device? This cannot be undone.",
+  settings_ai_warning:
+    "Only use AI analysis if you are comfortable sending this text to the selected AI provider.",
+  settings_privacy_title: "Privacy & safety",
+  settings_privacy_local:
+    "This is a local-first app. Your notes, images and reflections are encrypted and stored only on this device. Nothing is uploaded to a server, and there are no accounts.",
   settings_disclaimer:
-    "Therapy Insight offers reflections and affirmations drawn from your own notes. It is not a medical device and does not provide diagnosis or treatment. Please keep seeing your therapist.",
+    "This app is a personal reflection tool. It is not therapy, medical advice, diagnosis, or treatment, and it does not replace a licensed professional.",
+  settings_crisis_note:
+    "If you are in immediate danger or may harm yourself or someone else, contact local emergency services or a crisis helpline immediately.",
 
   // AI providers
   provider_mock_label: "Demo mode (on-device)",
@@ -214,6 +223,8 @@ const fa: Record<TranslationKey, string> = {
   memories_count_other: "{n} خاطره، تازه‌ترین‌ها اول.",
   memories_empty_title: "هنوز چیزی اینجا نیست",
   memories_empty_cta: "اولین یادداشتت را ثبت کن",
+  memories_search_ph: "جستجو در بازتاب‌هایت",
+  memories_no_results: "هیچ بازتابی با جستجوی تو همخوانی ندارد.",
 
   detail_not_found: "این خاطره پیدا نشد.",
   detail_delete: "حذف",
@@ -251,8 +262,15 @@ const fa: Record<TranslationKey, string> = {
   settings_delete: "حذف همه‌چیز",
   settings_wipe_confirm:
     "همهٔ یادداشت‌ها، بینش‌ها و گذرواژه‌ات از این دستگاه حذف شوند؟ این کار قابل بازگشت نیست.",
+  settings_ai_warning:
+    "تنها در صورتی از تحلیل هوش مصنوعی استفاده کن که با ارسال این متن به ارائه‌دهندهٔ انتخاب‌شده راحت هستی.",
+  settings_privacy_title: "حریم خصوصی و ایمنی",
+  settings_privacy_local:
+    "این یک برنامهٔ محلی‌محور است. یادداشت‌ها، تصویرها و بازتاب‌های تو رمزگذاری شده و فقط روی همین دستگاه ذخیره می‌شوند. چیزی روی هیچ سروری بارگذاری نمی‌شود و هیچ حسابی وجود ندارد.",
   settings_disclaimer:
-    "بینش درمان بازتاب‌ها و تأکیدهای مثبتی برگرفته از یادداشت‌های خودت ارائه می‌دهد. این یک دستگاه پزشکی نیست و تشخیص یا درمان ارائه نمی‌دهد. لطفاً همچنان به درمانگرت مراجعه کن.",
+    "این برنامه یک ابزار بازتاب شخصی است. درمان، توصیهٔ پزشکی، تشخیص یا درمان نیست و جایگزین یک متخصص دارای مجوز نمی‌شود.",
+  settings_crisis_note:
+    "اگر در خطر فوری هستی یا ممکن است به خودت یا کسی دیگر آسیب بزنی، فوراً با اورژانس محلی یا یک خط یاری بحران تماس بگیر.",
 
   provider_mock_label: "حالت نمایشی (روی دستگاه)",
   provider_mock_note: "خروجی نمونهٔ واقع‌گرایانه. هیچ چیزی از دستگاهت خارج نمی‌شود.",
