@@ -6,30 +6,17 @@ import {
   loadAIConfig,
   saveAIConfig,
 } from "../ai";
+import { useLang } from "../i18n/LanguageContext";
+import { type Lang, langLabel } from "../i18n/translations";
 import { exportAll, wipeAllData } from "../db/database";
 import { GearIcon, LockIcon, SparkIcon, TrashIcon } from "../components/icons";
 
-const PROVIDERS: { id: AIProviderId; label: string; note: string }[] = [
-  {
-    id: "mock",
-    label: "Demo mode (on-device)",
-    note: "Realistic sample output. Nothing leaves your device.",
-  },
-  {
-    id: "openai",
-    label: "OpenAI (cloud)",
-    note: "Coming soon. Sends note content off-device when enabled.",
-  },
-  {
-    id: "anthropic",
-    label: "Anthropic Claude (cloud)",
-    note: "Coming soon. Sends note content off-device when enabled.",
-  },
-];
+const PROVIDER_IDS: AIProviderId[] = ["mock", "openai", "anthropic"];
 
 export function Settings() {
   const key = useVaultKey();
   const { lock, refresh } = useVault();
+  const { t, lang, setLang } = useLang();
 
   const [config, setConfig] = useState<AIConfig>(loadAIConfig());
   const [savedFlash, setSavedFlash] = useState(false);
@@ -55,9 +42,7 @@ export function Settings() {
   }
 
   async function handleWipe() {
-    const sure = window.confirm(
-      "Delete ALL notes, insights and your passphrase from this device? This cannot be undone.",
-    );
+    const sure = window.confirm(t("settings_wipe_confirm"));
     if (!sure) return;
     await wipeAllData();
     await refresh();
@@ -67,23 +52,46 @@ export function Settings() {
     <div className="animate-fade-up space-y-6">
       <header className="flex items-center gap-2">
         <GearIcon className="h-6 w-6 text-sage-500" />
-        <h1 className="font-serif text-2xl text-sage-700">Settings</h1>
+        <h1 className="font-serif text-2xl text-sage-700">
+          {t("settings_title")}
+        </h1>
       </header>
+
+      <section className="card space-y-3">
+        <h2 className="font-medium text-sage-700">{t("settings_language")}</h2>
+        <div className="flex gap-2">
+          {(["en", "fa"] as Lang[]).map((l) => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              className={`flex-1 rounded-2xl border px-4 py-2.5 text-sm font-medium transition ${
+                lang === l
+                  ? "border-sage-400 bg-sage-50 text-sage-700"
+                  : "border-sand-200 bg-white/60 text-sage-600"
+              }`}
+            >
+              {langLabel[l]}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="card space-y-4">
         <div className="flex items-center gap-2">
           <SparkIcon className="h-5 w-5 text-sage-500" />
-          <h2 className="font-medium text-sage-700">Insight engine</h2>
+          <h2 className="font-medium text-sage-700">{t("settings_engine")}</h2>
           {savedFlash && (
-            <span className="ml-auto text-xs text-sage-500">Saved</span>
+            <span className="ms-auto text-xs text-sage-500">
+              {t("settings_saved")}
+            </span>
           )}
         </div>
         <div className="space-y-2">
-          {PROVIDERS.map((p) => (
+          {PROVIDER_IDS.map((id) => (
             <label
-              key={p.id}
+              key={id}
               className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-3 transition ${
-                config.provider === p.id
+                config.provider === id
                   ? "border-sage-400 bg-sage-50"
                   : "border-sand-200 bg-white/60"
               }`}
@@ -92,14 +100,16 @@ export function Settings() {
                 type="radio"
                 name="provider"
                 className="mt-1 accent-sage-500"
-                checked={config.provider === p.id}
-                onChange={() => updateConfig({ ...config, provider: p.id })}
+                checked={config.provider === id}
+                onChange={() => updateConfig({ ...config, provider: id })}
               />
               <span>
                 <span className="block text-sm font-medium text-sage-700">
-                  {p.label}
+                  {t(`provider_${id}_label`)}
                 </span>
-                <span className="block text-xs text-sage-500">{p.note}</span>
+                <span className="block text-xs text-sage-500">
+                  {t(`provider_${id}_note`)}
+                </span>
               </span>
             </label>
           ))}
@@ -107,7 +117,9 @@ export function Settings() {
 
         {config.provider !== "mock" && (
           <label className="block">
-            <span className="text-xs font-medium text-sage-600">API key</span>
+            <span className="text-xs font-medium text-sage-600">
+              {t("settings_apikey")}
+            </span>
             <input
               type="password"
               value={config.apiKey}
@@ -115,42 +127,36 @@ export function Settings() {
                 updateConfig({ ...config, apiKey: e.target.value })
               }
               className="input mt-1"
-              placeholder="Stored only on this device"
+              placeholder={t("settings_apikey_ph")}
             />
             <span className="mt-1 block text-xs text-sage-500/80">
-              Cloud providers aren't wired up yet in this prototype. Demo mode
-              gives you the full experience today.
+              {t("settings_apikey_note")}
             </span>
           </label>
         )}
       </section>
 
       <section className="card space-y-3">
-        <h2 className="font-medium text-sage-700">Your data</h2>
-        <p className="text-xs text-sage-500">
-          Everything is encrypted on this device with your passphrase. Export a
-          decrypted backup, or remove it all.
-        </p>
+        <h2 className="font-medium text-sage-700">{t("settings_data")}</h2>
+        <p className="text-xs text-sage-500">{t("settings_data_note")}</p>
         <button onClick={handleExport} className="btn-ghost w-full">
-          Export a backup (JSON)
+          {t("settings_export")}
         </button>
         <button onClick={lock} className="btn-ghost w-full">
           <LockIcon className="h-4 w-4" />
-          Lock now
+          {t("settings_lock")}
         </button>
         <button
           onClick={handleWipe}
           className="flex w-full items-center justify-center gap-2 rounded-2xl border border-bloom-400/40 bg-bloom-400/10 px-5 py-3 font-medium text-bloom-500 transition active:scale-[0.98]"
         >
           <TrashIcon className="h-4 w-4" />
-          Delete everything
+          {t("settings_delete")}
         </button>
       </section>
 
       <p className="px-2 text-center text-xs leading-relaxed text-sage-500/80">
-        Therapy Insight offers reflections and affirmations drawn from your own
-        notes. It is not a medical device and does not provide diagnosis or
-        treatment. Please keep seeing your therapist.
+        {t("settings_disclaimer")}
       </p>
     </div>
   );

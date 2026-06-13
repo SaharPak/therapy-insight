@@ -3,6 +3,7 @@ import { BottomNav } from "./components/BottomNav";
 import { CrisisFooter } from "./components/CrisisFooter";
 import { VaultGate } from "./components/VaultGate";
 import { useVault } from "./context/VaultContext";
+import { useLang } from "./i18n/LanguageContext";
 import { Capture } from "./pages/Capture";
 import { Memories } from "./pages/Memories";
 import { MemoryDetail } from "./pages/MemoryDetail";
@@ -11,11 +12,12 @@ import { Today } from "./pages/Today";
 
 export default function App() {
   const { status } = useVault();
+  const { t } = useLang();
 
   if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center text-sage-500">
-        <span className="animate-pulse">Opening your space…</span>
+        <span className="animate-pulse">{t("opening")}</span>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import {
+  type AILang,
   type AIProvider,
   type CommitmentResult,
   type DailyInsightResult,
@@ -28,7 +29,7 @@ export class AnthropicProvider implements AIProvider {
     );
   }
 
-  async ocr(_image: Blob): Promise<string> {
+  async ocr(_image: Blob, _lang?: AILang): Promise<string> {
     this.ensureConfigured();
     return "";
   }
@@ -36,6 +37,7 @@ export class AnthropicProvider implements AIProvider {
   async generateDailyInsight(
     _notes: NoteContext[],
     _date: string,
+    _lang?: AILang,
   ): Promise<DailyInsightResult> {
     this.ensureConfigured();
     return { strength: "", reminder: "", affirmation: "", sourceNoteIds: [] };

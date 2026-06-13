@@ -185,7 +185,7 @@ export async function countNotes(): Promise<number> {
 
 type InsightPayload = Pick<
   Insight,
-  "strength" | "reminder" | "affirmation" | "sourceNoteIds"
+  "strength" | "reminder" | "affirmation" | "sourceNoteIds" | "lang"
 >;
 
 export async function getInsightForDate(

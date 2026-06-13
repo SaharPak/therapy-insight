@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useVaultKey } from "../context/VaultContext";
 import { addNote } from "../db/database";
 import { getProvider, loadAIConfig } from "../ai";
+import type { AILang } from "../ai";
+import { useLang } from "../i18n/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 import { compressImage, fileToDataUrl } from "../lib/image";
 import { fromDateInputValue, toDateInputValue } from "../lib/date";
 import { CameraIcon, PlusIcon, SparkIcon } from "../components/icons";
@@ -11,6 +14,7 @@ type Step = "choose" | "review";
 
 export function Capture() {
   const key = useVaultKey();
+  const { t, lang } = useLang();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +29,7 @@ export function Capture() {
 
   const config = loadAIConfig();
   const provider = getProvider(config);
+  const providerLabel = t(`provider_${provider.id}_label` as TranslationKey);
 
   async function handleFile(file: File) {
     setError(null);
@@ -38,7 +43,7 @@ export function Capture() {
       setStep("review");
       void runOcr(file);
     } catch {
-      setError("Sorry, that image couldn't be loaded. Try another photo.");
+      setError(t("capture_err_image"));
     }
   }
 
@@ -46,20 +51,16 @@ export function Capture() {
     if (provider.sendsDataOffDevice) {
       // Cloud providers require explicit consent before sending the image.
       const consent = window.confirm(
-        `Extract text using ${provider.label}? This sends the photo off your device. Choose Cancel to type the text yourself.`,
+        t("capture_consent", { provider: providerLabel }),
       );
       if (!consent) return;
     }
     setOcrBusy(true);
     try {
-      const extracted = await provider.ocr(file);
+      const extracted = await provider.ocr(file, lang as AILang);
       setText((current) => current || extracted);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Text extraction failed. You can type the text instead.",
-      );
+      setError(err instanceof Error ? err.message : t("capture_err_ocr"));
     } finally {
       setOcrBusy(false);
     }
@@ -74,7 +75,7 @@ export function Capture() {
 
   async function handleSave() {
     if (!text.trim()) {
-      setError("Add a little text so this memory has something to hold onto.");
+      setError(t("capture_err_empty"));
       return;
     }
     setSaving(true);
@@ -87,7 +88,7 @@ export function Capture() {
       });
       navigate("/memories");
     } catch {
-      setError("Something went wrong while saving. Please try again.");
+      setError(t("capture_err_save"));
       setSaving(false);
     }
   }
@@ -103,11 +104,10 @@ export function Capture() {
   return (
     <div className="animate-fade-up space-y-6">
       <header>
-        <h1 className="font-serif text-2xl text-sage-700">Capture a memory</h1>
-        <p className="mt-1 text-sm text-sage-600">
-          Photograph a page from your notes, or write a reflection. It's
-          encrypted the moment you save it.
-        </p>
+        <h1 className="font-serif text-2xl text-sage-700">
+          {t("capture_title")}
+        </h1>
+        <p className="mt-1 text-sm text-sage-600">{t("capture_subtitle")}</p>
       </header>
 
       {step === "choose" && (
@@ -131,24 +131,24 @@ export function Capture() {
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sage-500 text-white shadow-soft">
               <CameraIcon className="h-7 w-7" />
             </span>
-            <span className="font-medium">Take or choose a photo</span>
+            <span className="font-medium">{t("capture_take_photo")}</span>
             <span className="text-xs text-sage-500/80">
-              Handwritten or printed notes both work
+              {t("capture_photo_hint")}
             </span>
           </button>
 
           <button onClick={startManual} className="btn-ghost w-full">
             <PlusIcon className="h-4 w-4" />
-            Write a reflection instead
+            {t("capture_write_instead")}
           </button>
 
           {error && <p className="text-sm text-bloom-500">{error}</p>}
 
           <p className="rounded-2xl bg-sage-100/60 p-3 text-xs text-sage-600">
-            Using {provider.label}.{" "}
+            {t("capture_using", { provider: providerLabel })}{" "}
             {provider.sendsDataOffDevice
-              ? "You'll be asked before any photo leaves your device."
-              : "Nothing leaves your device."}
+              ? t("capture_offdevice_warn")
+              : t("capture_ondevice")}
           </p>
         </div>
       )}
@@ -158,14 +158,14 @@ export function Capture() {
           {previewUrl && (
             <img
               src={previewUrl}
-              alt="Note preview"
+              alt=""
               className="max-h-72 w-full rounded-3xl object-cover shadow-card"
             />
           )}
 
           <label className="block">
             <span className="text-xs font-medium text-sage-600">
-              When was this from?
+              {t("capture_when")}
             </span>
             <input
               type="date"
@@ -178,11 +178,11 @@ export function Capture() {
 
           <label className="block">
             <span className="flex items-center justify-between text-xs font-medium text-sage-600">
-              <span>Note text</span>
+              <span>{t("capture_note_text")}</span>
               {ocrBusy && (
                 <span className="flex items-center gap-1 text-sage-500">
                   <SparkIcon className="h-3.5 w-3.5 animate-pulse" />
-                  Reading…
+                  {t("capture_reading")}
                 </span>
               )}
             </span>
@@ -190,11 +190,10 @@ export function Capture() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={8}
+              dir="auto"
               className="input mt-1 resize-none leading-relaxed"
               placeholder={
-                ocrBusy
-                  ? "Extracting the words from your photo\u2026"
-                  : "What did this session hold? You can edit anything here."
+                ocrBusy ? t("capture_extracting") : t("capture_text_ph")
               }
             />
           </label>
@@ -203,14 +202,14 @@ export function Capture() {
 
           <div className="flex gap-3">
             <button onClick={reset} className="btn-ghost flex-1">
-              Back
+              {t("back")}
             </button>
             <button
               onClick={handleSave}
               className="btn-primary flex-1"
               disabled={saving || ocrBusy}
             >
-              {saving ? "Saving\u2026" : "Save memory"}
+              {saving ? t("saving") : t("capture_save")}
             </button>
           </div>
         </div>

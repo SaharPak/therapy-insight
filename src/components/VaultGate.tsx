@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useVault } from "../context/VaultContext";
+import { useLang } from "../i18n/LanguageContext";
+import { langLabel, type Lang } from "../i18n/translations";
 import { LockIcon, SparkIcon } from "./icons";
 
 /**
@@ -9,6 +11,7 @@ import { LockIcon, SparkIcon } from "./icons";
  */
 export function VaultGate() {
   const { status, setup, unlock } = useVault();
+  const { t, lang, setLang } = useLang();
   const isSetup = status === "needs_setup";
 
   const [passphrase, setPassphrase] = useState("");
@@ -22,11 +25,11 @@ export function VaultGate() {
 
     if (isSetup) {
       if (passphrase.length < 6) {
-        setError("Please choose a passphrase of at least 6 characters.");
+        setError(t("gate_err_short"));
         return;
       }
       if (passphrase !== confirm) {
-        setError("The two passphrases do not match.");
+        setError(t("gate_err_match"));
         return;
       }
       setBusy(true);
@@ -41,7 +44,7 @@ export function VaultGate() {
     setBusy(true);
     try {
       const ok = await unlock(passphrase);
-      if (!ok) setError("That passphrase didn't work. Please try again.");
+      if (!ok) setError(t("gate_err_wrong"));
     } finally {
       setBusy(false);
     }
@@ -50,24 +53,37 @@ export function VaultGate() {
   return (
     <div className="app-shell min-h-screen justify-center px-6 py-10">
       <div className="animate-fade-up">
+        <div className="mb-4 flex justify-center gap-2">
+          {(["en", "fa"] as Lang[]).map((l) => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                lang === l
+                  ? "bg-sage-500 text-white"
+                  : "bg-white/70 text-sage-600"
+              }`}
+            >
+              {langLabel[l]}
+            </button>
+          ))}
+        </div>
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-sage-500 text-white shadow-soft">
             <SparkIcon className="h-8 w-8" />
           </div>
           <h1 className="mt-4 font-serif text-2xl text-sage-700">
-            Therapy Insight
+            {t("brand")}
           </h1>
           <p className="mt-2 text-sm text-sage-600">
-            {isSetup
-              ? "Let's protect your notes. Choose a passphrase \u2014 it stays on this device and encrypts everything you save."
-              : "Welcome back. Enter your passphrase to unlock your notes."}
+            {isSetup ? t("gate_setup_subtitle") : t("gate_unlock_subtitle")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="card space-y-4">
           <label className="block">
             <span className="text-xs font-medium text-sage-600">
-              Passphrase
+              {t("gate_passphrase")}
             </span>
             <input
               type="password"
@@ -75,7 +91,7 @@ export function VaultGate() {
               value={passphrase}
               onChange={(e) => setPassphrase(e.target.value)}
               className="input mt-1"
-              placeholder="Your private passphrase"
+              placeholder={t("gate_passphrase_ph")}
               autoComplete={isSetup ? "new-password" : "current-password"}
             />
           </label>
@@ -83,14 +99,14 @@ export function VaultGate() {
           {isSetup && (
             <label className="block">
               <span className="text-xs font-medium text-sage-600">
-                Confirm passphrase
+                {t("gate_confirm")}
               </span>
               <input
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 className="input mt-1"
-                placeholder="Type it again"
+                placeholder={t("gate_confirm_ph")}
                 autoComplete="new-password"
               />
             </label>
@@ -100,17 +116,12 @@ export function VaultGate() {
 
           <button type="submit" className="btn-primary w-full" disabled={busy}>
             <LockIcon className="h-4 w-4" />
-            {busy
-              ? "Working\u2026"
-              : isSetup
-                ? "Create my private space"
-                : "Unlock"}
+            {busy ? t("gate_working") : isSetup ? t("gate_create") : t("gate_unlock")}
           </button>
 
           {isSetup && (
             <p className="text-center text-xs text-sage-500/80">
-              There is no password recovery — that's what keeps your notes
-              private. Keep your passphrase somewhere safe.
+              {t("gate_no_recovery")}
             </p>
           )}
         </form>

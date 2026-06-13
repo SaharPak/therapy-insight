@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { useVaultKey } from "../context/VaultContext";
 import { getNotes } from "../db/database";
 import type { Note } from "../types";
+import { useLang } from "../i18n/LanguageContext";
 import { formatMonthYear } from "../lib/date";
 import { BookIcon, CameraIcon, PlusIcon } from "../components/icons";
 
 export function Memories() {
   const key = useVaultKey();
+  const { t } = useLang();
   const [notes, setNotes] = useState<Note[] | null>(null);
 
   useEffect(() => {
@@ -20,17 +22,24 @@ export function Memories() {
   }, [key]);
 
   if (notes === null) {
-    return <p className="py-10 text-center text-sage-500">Loading…</p>;
+    return <p className="py-10 text-center text-sage-500">{t("loading")}</p>;
   }
 
   return (
     <div className="animate-fade-up space-y-6">
       <header>
-        <h1 className="font-serif text-2xl text-sage-700">Memories</h1>
+        <h1 className="font-serif text-2xl text-sage-700">
+          {t("memories_title")}
+        </h1>
         <p className="mt-1 text-sm text-sage-600">
           {notes.length === 0
-            ? "Your saved notes will live here."
-            : `${notes.length} ${notes.length === 1 ? "memory" : "memories"}, newest first.`}
+            ? t("memories_empty_sub")
+            : t(
+                notes.length === 1
+                  ? "memories_count_one"
+                  : "memories_count_other",
+                { n: notes.length },
+              )}
         </p>
       </header>
 
@@ -42,9 +51,9 @@ export function Memories() {
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sage-100 text-sage-500">
             <BookIcon className="h-7 w-7" />
           </span>
-          <span className="font-medium">Nothing here yet</span>
+          <span className="font-medium">{t("memories_empty_title")}</span>
           <span className="inline-flex items-center gap-1 text-sm text-sage-500">
-            <PlusIcon className="h-4 w-4" /> Capture your first note
+            <PlusIcon className="h-4 w-4" /> {t("memories_empty_cta")}
           </span>
         </Link>
       ) : (
@@ -73,7 +82,10 @@ export function Memories() {
                     )}
                     {formatMonthYear(note.noteDate)}
                   </div>
-                  <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-sage-700">
+                  <p
+                    className="mt-1 line-clamp-3 text-sm leading-relaxed text-sage-700"
+                    dir="auto"
+                  >
                     {note.text}
                   </p>
                 </div>

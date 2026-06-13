@@ -30,6 +30,8 @@ export interface Insight {
   reminder: string;
   affirmation: string;
   sourceNoteIds: string[];
+  /** Language the insight was generated in ("en" | "fa"). */
+  lang: string;
   createdAt: number;
 }
 

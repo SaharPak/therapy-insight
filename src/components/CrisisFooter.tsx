@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLang } from "../i18n/LanguageContext";
 import { HeartIcon } from "./icons";
 
 /**
@@ -7,6 +8,7 @@ import { HeartIcon } from "./icons";
  * they should be able to reach real help in one tap.
  */
 export function CrisisFooter() {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
 
   return (
@@ -16,7 +18,7 @@ export function CrisisFooter() {
         className="flex items-center justify-center gap-1.5 py-3 text-xs text-sage-500/80 transition hover:text-sage-600"
       >
         <HeartIcon className="h-3.5 w-3.5" />
-        Need to talk to someone now?
+        {t("crisis_link")}
       </button>
 
       {open && (
@@ -29,52 +31,54 @@ export function CrisisFooter() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-semibold text-sage-700">
-              You deserve support
+              {t("crisis_title")}
             </h2>
-            <p className="mt-2 text-sm text-sage-600">
-              Therapy Insight is a personal reflection tool, not a substitute
-              for professional care. If you are in crisis or thinking about
-              harming yourself, please reach out right now.
-            </p>
+            <p className="mt-2 text-sm text-sage-600">{t("crisis_body")}</p>
             <ul className="mt-4 space-y-3 text-sm">
               <li className="rounded-2xl bg-sand-100 p-3">
                 <span className="font-medium text-sage-700">
-                  US &amp; Canada
+                  {t("crisis_region_us")}
                 </span>
                 <br />
-                Call or text <strong>988</strong> (Suicide &amp; Crisis
-                Lifeline)
-              </li>
-              <li className="rounded-2xl bg-sand-100 p-3">
-                <span className="font-medium text-sage-700">UK &amp; ROI</span>
-                <br />
-                Call <strong>116 123</strong> (Samaritans)
+                {t("crisis_help_us")}
               </li>
               <li className="rounded-2xl bg-sand-100 p-3">
                 <span className="font-medium text-sage-700">
-                  Elsewhere
+                  {t("crisis_region_uk")}
                 </span>
                 <br />
-                Find a helpline at{" "}
+                {t("crisis_help_uk")}
+              </li>
+              <li className="rounded-2xl bg-sand-100 p-3">
+                <span className="font-medium text-sage-700">
+                  {t("crisis_region_ir")}
+                </span>
+                <br />
+                {t("crisis_help_ir")}
+              </li>
+              <li className="rounded-2xl bg-sand-100 p-3">
+                <span className="font-medium text-sage-700">
+                  {t("crisis_region_other")}
+                </span>
+                <br />
                 <a
                   className="text-sage-500 underline"
                   href="https://findahelpline.com"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  findahelpline.com
+                  {t("crisis_help_other")}
                 </a>
               </li>
               <li className="rounded-2xl bg-bloom-400/15 p-3 text-sage-700">
-                If you are in immediate danger, call your local emergency
-                number.
+                {t("crisis_danger")}
               </li>
             </ul>
             <button
               onClick={() => setOpen(false)}
               className="btn-primary mt-5 w-full"
             >
-              Close
+              {t("crisis_close")}
             </button>
           </div>
         </div>

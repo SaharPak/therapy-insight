@@ -36,6 +36,9 @@ export interface CommitmentResult {
 
 export type AIProviderId = "mock" | "openai" | "anthropic";
 
+/** Language hint for generated content. */
+export type AILang = "en" | "fa";
+
 export interface AIProvider {
   readonly id: AIProviderId;
   readonly label: string;
@@ -43,12 +46,13 @@ export interface AIProvider {
   readonly sendsDataOffDevice: boolean;
 
   /** Extract text from a photographed note. */
-  ocr(image: Blob): Promise<string>;
+  ocr(image: Blob, lang?: AILang): Promise<string>;
 
   /** Build today's grounded insight from recent notes. */
   generateDailyInsight(
     notes: NoteContext[],
     date: string,
+    lang?: AILang,
   ): Promise<DailyInsightResult>;
 
   /** Cluster recurring themes across notes (groundwork for later UI). */
